@@ -1,0 +1,26 @@
+# Zig build artifacts & cache
+.zig-cache/
+zig-out/
+
+# Local agent & editor metadata
+.agents/
+AGENTS.md
+GEMINI.md
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Binary and debug artifacts
+*.exe
+*.dll
+*.pdb
+*.obj
+*.o
+*.lib
+*.a
