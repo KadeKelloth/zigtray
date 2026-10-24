@@ -32,7 +32,7 @@ Or add directly to `build.zig.zon`:
 .dependencies = .{
     .zigtray = .{
         .url = "https://github.com/KadeKelloth/zigtray/archive/refs/tags/v0.1.1.tar.gz",
-        .hash = "N-V-__8AAHB6AABTmV9p4pAQBCFdOVDZb7hGgJOJMCecW6WM",
+        .hash = "zigtray-0.1.1-i9mSM3B6AABDsLCLBev-LDahOcyCy1fyrmjh_efmhyv1",
     },
 },
 ```
