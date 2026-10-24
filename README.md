@@ -23,7 +23,18 @@ Lightweight, zero-dependency Windows system tray library for Zig (0.17+).
 Add to your project:
 
 ```bash
-zig fetch --save git+https://github.com/KadeKelloth/zigtray
+zig fetch --save https://github.com/KadeKelloth/zigtray/archive/refs/tags/v0.1.0.tar.gz
+```
+
+Or add directly to `build.zig.zon`:
+
+```zig
+.dependencies = .{
+    .zigtray = .{
+        .url = "https://github.com/KadeKelloth/zigtray/archive/refs/tags/v0.1.0.tar.gz",
+        .hash = "N-V-__8AAKh1AABuYVG5jljOsRN7SXy8ZFL_HOXs_HVck4rX",
+    },
+},
 ```
 
 In your `build.zig`:
