@@ -6,7 +6,8 @@ Lightweight, zero-dependency Windows system tray library for Zig (0.17+).
 
 - **Zero dependencies**: direct Win32 API bindings (`user32`, `shell32`, `gdi32`), no libc or external C wrappers required.
 - **Icon support**: load `.ico` from disk, pass raw `HICON`, or use the default executable icon.
-- **Context menus**: items with actions, toggle checks, separators, and 32-bit PARGB icons.
+- **Context menus**: items with actions, toggle checks, separators, 32-bit PARGB icons, and native Windows 10/11 **dark mode**.
+- **Modern protocol**: `NOTIFYICON_VERSION_4` with keyboard accessibility (`Enter`/`Space`) and accurate cursor coordinates.
 - **Taskbar recovery**: automatically restores the tray icon if `explorer.exe` restarts (`TaskbarCreated`).
 - **Callbacks**: click and double-click handlers.
 - **Tooltips & notifications**: native hover tooltips and balloon notifications.
@@ -23,7 +24,7 @@ Lightweight, zero-dependency Windows system tray library for Zig (0.17+).
 Add to your project:
 
 ```bash
-zig fetch --save https://github.com/KadeKelloth/zigtray/archive/refs/tags/v0.1.1.tar.gz
+zig fetch --save https://github.com/KadeKelloth/zigtray/archive/refs/tags/v0.1.2.tar.gz
 ```
 
 Or add directly to `build.zig.zon`:
@@ -31,8 +32,8 @@ Or add directly to `build.zig.zon`:
 ```zig
 .dependencies = .{
     .zigtray = .{
-        .url = "https://github.com/KadeKelloth/zigtray/archive/refs/tags/v0.1.1.tar.gz",
-        .hash = "zigtray-0.1.1-i9mSM3B6AABDsLCLBev-LDahOcyCy1fyrmjh_efmhyv1",
+        .url = "https://github.com/KadeKelloth/zigtray/archive/refs/tags/v0.1.2.tar.gz",
+        .hash = "zigtray-0.1.2-i9mSM096AACkZAZGrMTQmoKUu3Pmy0BR7XPWb2sYdEDG",
     },
 },
 ```

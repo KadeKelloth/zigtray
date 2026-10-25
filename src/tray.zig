@@ -46,6 +46,7 @@ pub const Menu = struct {
 pub const Options = struct {
     tooltip: []const u8 = "zigtray",
     icon: Icon = .default,
+    dark_mode: bool = true,
     on_click: ?*const fn (tray: *Tray) void = null,
     on_double_click: ?*const fn (tray: *Tray) void = null,
 };
@@ -136,6 +137,10 @@ pub const Tray = struct {
 
         utf8ToWideZ(&self.nid.szTip, opts.tooltip);
         _ = win32.SetWindowLongPtrW(hwnd, win32.GWLP_USERDATA, @intCast(@intFromPtr(self)));
+
+        if (opts.dark_mode) {
+            self.setDarkMode(true);
+        }
 
         var ok = false;
         var retries: u32 = 0;
@@ -246,6 +251,24 @@ pub const Tray = struct {
     pub fn stop(self: *Tray) void {
         self.running = false;
         win32.PostQuitMessage(0);
+    }
+
+    pub fn setDarkMode(self: *Tray, enable: bool) void {
+        const uxtheme_dll = std.unicode.utf8ToUtf16LeStringLiteral("uxtheme.dll");
+        const h = win32.LoadLibraryW(uxtheme_dll) orelse return;
+
+        if (win32.GetProcAddress(h, @as([*:0]const u8, @ptrFromInt(135)))) |proc| {
+            const set_app_mode: *const fn (mode: i32) callconv(.winapi) i32 = @ptrCast(proc);
+            _ = set_app_mode(if (enable) 1 else 0);
+        }
+        if (win32.GetProcAddress(h, @as([*:0]const u8, @ptrFromInt(133)))) |proc| {
+            const allow_wnd: *const fn (wnd: win32.HWND, allow: win32.BOOL) callconv(.winapi) win32.BOOL = @ptrCast(proc);
+            _ = allow_wnd(self.hwnd, if (enable) win32.TRUE else win32.FALSE);
+        }
+        if (win32.GetProcAddress(h, @as([*:0]const u8, @ptrFromInt(136)))) |proc| {
+            const flush_menus: *const fn () callconv(.winapi) void = @ptrCast(proc);
+            flush_menus();
+        }
     }
 
     fn popupMenu(self: *Tray, x: i32, y: i32) void {

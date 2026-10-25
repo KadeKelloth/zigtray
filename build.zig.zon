@@ -1,6 +1,6 @@
 .{
     .name = .zigtray,
-    .version = "0.1.1",
+    .version = "0.1.2",
     .fingerprint = 0x378abd5f3392d98b,
     .minimum_zig_version = "0.17.0",
     .dependencies = .{},
@@ -10,6 +10,5 @@
         "src",
         "examples",
         "LICENSE",
-        "README.md",
     },
 }
