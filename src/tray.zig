@@ -1,7 +1,7 @@
 const std = @import("std");
 const win32 = @import("win32.zig");
 
-const WM_TRAY: win32.UINT = win32.WM_USER + 1;
+const WM_TRAY: win32.UINT = win32.WM_APP + 1;
 const WND_CLASS = std.unicode.utf8ToUtf16LeStringLiteral("zigtray_wnd");
 const TASKBAR_CREATED = std.unicode.utf8ToUtf16LeStringLiteral("TaskbarCreated");
 
@@ -128,6 +128,7 @@ pub const Tray = struct {
                 .uFlags = win32.NIF_MESSAGE | win32.NIF_ICON | win32.NIF_TIP | win32.NIF_SHOWTIP,
                 .uCallbackMessage = WM_TRAY,
                 .hIcon = ico,
+                .uTimeoutOrVersion = win32.NOTIFYICON_VERSION_4,
             },
             .on_click = opts.on_click,
             .on_dbl_click = opts.on_double_click,
@@ -152,6 +153,9 @@ pub const Tray = struct {
             alloc.destroy(self);
             return Error.TrayRegistrationFailed;
         }
+
+        self.nid.uTimeoutOrVersion = win32.NOTIFYICON_VERSION_4;
+        _ = win32.Shell_NotifyIconW(win32.NIM_SETVERSION, &self.nid);
 
         return self;
     }
@@ -244,12 +248,14 @@ pub const Tray = struct {
         win32.PostQuitMessage(0);
     }
 
-    fn popupMenu(self: *Tray) void {
+    fn popupMenu(self: *Tray, x: i32, y: i32) void {
         const m = self.menu orelse return;
         if (m.items.items.len == 0) return;
 
-        var pt: win32.POINT = undefined;
-        _ = win32.GetCursorPos(&pt);
+        var pt: win32.POINT = .{ .x = x, .y = y };
+        if (x == 0 and y == 0) {
+            _ = win32.GetCursorPos(&pt);
+        }
         _ = win32.SetForegroundWindow(self.hwnd);
 
         const hmenu = win32.CreatePopupMenu() orelse return;
@@ -373,17 +379,22 @@ fn wndProc(hwnd: ?win32.HWND, msg: win32.UINT, wp: win32.WPARAM, lp: win32.LPARA
     const self: *Tray = @ptrFromInt(@as(usize, @intCast(raw)));
 
     if (msg == self.wm_taskbar_created and self.wm_taskbar_created != 0) {
-        _ = win32.Shell_NotifyIconW(win32.NIM_ADD, &self.nid);
+        if (win32.Shell_NotifyIconW(win32.NIM_ADD, &self.nid) == win32.TRUE) {
+            self.nid.uTimeoutOrVersion = win32.NOTIFYICON_VERSION_4;
+            _ = win32.Shell_NotifyIconW(win32.NIM_SETVERSION, &self.nid);
+        }
         return 0;
     }
 
     switch (msg) {
         WM_TRAY => {
             const ev: u16 = @truncate(@as(usize, @bitCast(lp)));
+            const pt_x: i32 = @as(i16, @truncate(@as(isize, @bitCast(wp))));
+            const pt_y: i32 = @as(i16, @truncate(@as(isize, @bitCast(wp >> 16))));
             switch (ev) {
-                win32.WM_LBUTTONUP => if (self.on_click) |cb| cb(self),
+                win32.NIN_SELECT, win32.NIN_KEYSELECT, win32.WM_LBUTTONUP => if (self.on_click) |cb| cb(self),
                 win32.WM_LBUTTONDBLCLK => if (self.on_dbl_click) |cb| cb(self),
-                win32.WM_RBUTTONUP, win32.WM_CONTEXTMENU => self.popupMenu(),
+                win32.WM_CONTEXTMENU, win32.WM_RBUTTONUP => self.popupMenu(pt_x, pt_y),
                 else => {},
             }
             return 0;

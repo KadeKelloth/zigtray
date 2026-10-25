@@ -153,6 +153,16 @@ pub const WM_CLOSE: UINT = 0x0010;
 pub const WM_QUIT: UINT = 0x0012;
 pub const WM_COMMAND: UINT = 0x0111;
 pub const WM_USER: UINT = 0x0400;
+pub const WM_APP: UINT = 0x8000;
+
+pub const NIN_SELECT: UINT = WM_USER + 0;
+pub const NIN_KEYSELECT: UINT = WM_USER + 1;
+pub const NIN_BALLOONSHOW: UINT = WM_USER + 2;
+pub const NIN_BALLOONHIDE: UINT = WM_USER + 3;
+pub const NIN_BALLOONTIMEOUT: UINT = WM_USER + 4;
+pub const NIN_BALLOONUSERCLICK: UINT = WM_USER + 5;
+pub const NIN_POPUPOPEN: UINT = WM_USER + 6;
+pub const NIN_POPUPCLOSE: UINT = WM_USER + 7;
 
 pub const WM_LBUTTONUP: UINT = 0x0202;
 pub const WM_LBUTTONDBLCLK: UINT = 0x0203;
@@ -256,5 +266,8 @@ pub extern "gdi32" fn CreateDIBSection(hdc: ?HDC, pbmi: *const BITMAPINFO, usage
 pub extern "gdi32" fn DeleteObject(ho: ?HGDIOBJ) callconv(.winapi) BOOL;
 
 pub extern "kernel32" fn GetModuleHandleW(lpModuleName: ?[*:0]const WCHAR) callconv(.winapi) ?HINSTANCE;
+pub extern "kernel32" fn LoadLibraryW(lpLibFileName: [*:0]const WCHAR) callconv(.winapi) ?HINSTANCE;
+pub extern "kernel32" fn FreeLibrary(hLibModule: ?HINSTANCE) callconv(.winapi) BOOL;
+pub extern "kernel32" fn GetProcAddress(hModule: ?HINSTANCE, lpProcName: [*:0]const u8) callconv(.winapi) ?*const anyopaque;
 pub extern "kernel32" fn GetLastError() callconv(.winapi) DWORD;
 pub extern "kernel32" fn Sleep(dwMilliseconds: DWORD) callconv(.winapi) void;
